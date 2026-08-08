@@ -1,28 +1,28 @@
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 
-const API_BASE = import.meta.env.VITE_API_URL || '/api'
+export const API_BASE = import.meta.env.VITE_API_BASE_URL || '/api'
 
-function useSession() {
-  const [session, setSession] = useState(null)
-
-  useEffect(() => {
-    const stored = localStorage.getItem('pma_session')
-    if (stored) {
-      setSession(stored)
+export function useSession() {
+  const getSession = () => {
+    try {
+      const item = localStorage.getItem('session')
+      return item ? JSON.parse(item) : null
+    } catch {
+      return null
     }
-  }, [])
+  }
+
+  const [session, setSessionState] = useState(getSession())
 
   const setSessionToken = (token) => {
-    localStorage.setItem('pma_session', token)
-    setSession(token)
+    localStorage.setItem('session', JSON.stringify(token))
+    setSessionState(token)
   }
 
   const clearSession = () => {
-    localStorage.removeItem('pma_session')
-    setSession(null)
+    localStorage.removeItem('session')
+    setSessionState(null)
   }
 
   return { session, setSessionToken, clearSession }
 }
-
-export { API_BASE, useSession }
