@@ -1,9 +1,7 @@
 import { useState } from 'react'
 import { API_BASE } from '../utils/api'
 
-const LICENSE_URL = import.meta.env.VITE_LICENSE_URL || 'https://priscomac.com/get-license'
-
-export default function LandingPage({ onLicenseVerified }) {
+export default function LandingPage({ onLicenseVerified, onGetLicense }) {
   const [licenseKey, setLicenseKey] = useState('')
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
@@ -60,16 +58,14 @@ export default function LandingPage({ onLicenseVerified }) {
           </button>
         </form>
 
-        <div className="mt-6">
-          <a
-            href={LICENSE_URL}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-block border-2 border-primary text-primary font-semibold px-8 py-3 rounded-lg hover:bg-primary hover:text-white transition-colors"
+        {onGetLicense && (
+          <button
+            onClick={onGetLicense}
+            className="mt-4 w-full border-2 border-primary text-primary font-semibold py-3 rounded-lg hover:bg-primary hover:text-white transition-colors"
           >
-            Get Your License
-          </a>
-        </div>
+            Get License
+          </button>
+        )}
       </div>
     </div>
   )
