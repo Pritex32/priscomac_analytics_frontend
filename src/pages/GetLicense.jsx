@@ -43,7 +43,8 @@ export default function GetLicense({ onBack }) {
       if (res.ok && data.paid && data.license) {
         setLicenseKey(data.license)
       } else {
-        setError(data.detail || data.error || 'Payment not confirmed yet.')
+        const message = data.detail || data.error || 'Payment not confirmed yet.'
+        setError(message)
       }
     } catch (err) {
       setError('An error occurred while verifying payment.')
