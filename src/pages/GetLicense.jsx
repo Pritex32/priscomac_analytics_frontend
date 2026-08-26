@@ -38,21 +38,41 @@ export default function GetLicense({ onBack }) {
     setVerifying(true)
     setError('')
     try {
-      const res = await fetch(`${API_BASE}/paystack/verify/${encodeURIComponent(reference)}`)
-      const data = await res.json()
-      if (res.ok && data.paid && data.license) {
-        setLicenseKey(data.license)
-      } else {
-        const message = data.detail || data.error || 'Payment not confirmed yet.'
-        setError(message)
-      }
-    } catch (err) {
-      setError('An error occurred while verifying payment.')
-    } finally {
-      setVerifying(false)
-    }
-  }, [])
-
+      const res = await fetch(
+        `${API_BASE}/paystack/verify/${encodeURIComponent(reference)}`)
+        // Get the raw response first
+        const rawText = await res.text()
+        console.log('Verification status:', res.status)
+        console.log('Verification response:', rawText)
+        let data = {}
+        try {
+          data = JSON.parse(rawText)
+        } catch {
+          setError(
+            `Server returned an invalid response. Status: ${res.status}. ${rawText}`
+          )
+          return
+        }
+        if (res.ok && data.paid && data.license) {
+          setLicenseKey(data.license)
+        } else {
+          // Show the actual error from the backend
+          const message =
+          data.detail ||
+          data.error ||
+          data.message ||
+         `Payment verification failed. HTTP ${res.status}`
+         setError(message)
+        }
+      } catch (err) {
+          console.error('Payment verification error:', err)
+          setError(
+            `Payment verification error: ${err.message || 'Unable to connect to server.'}`
+          )
+        } finally {
+          setVerifying(false)
+        }
+      }, [])
   useEffect(() => {
     const params = new URLSearchParams(window.location.search)
     const reference = params.get('reference')
